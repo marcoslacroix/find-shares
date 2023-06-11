@@ -84,6 +84,7 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
               return ListView.builder(
                 itemCount: companies.length,
                   itemBuilder: (context, index) {
+                    bool isFavorite = companies[index].favorite ?? false;
                     return Card(
                       child: ListTile(
                         leading: const Icon(Icons.business),
@@ -107,7 +108,21 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
                             Text('${AppLocalizations.of(context)!.tagAlong}: ${companies[index].tagAlong}')
                           ],
                         ),
-                      ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              companies[index].favorite = !isFavorite;
+
+                            });
+                            // Handle icon tap event
+                            // Add your logic here to update the favorite status
+                          },
+                          icon: isFavorite
+                              ? const Icon(Icons.favorite,
+                              color: Colors.red)
+                              : const Icon(Icons.favorite_border)
+                          ),
+                      )
                     );
                 },
               );
