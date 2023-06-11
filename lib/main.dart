@@ -112,7 +112,6 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
                           onPressed: () {
                             setState(() {
                               companies[index].favorite = !isFavorite;
-
                             });
                             // Handle icon tap event
                             // Add your logic here to update the favorite status
