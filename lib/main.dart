@@ -85,6 +85,7 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
                 itemCount: companies.length,
                   itemBuilder: (context, index) {
                     bool isFavorite = companies[index].favorite ?? false;
+                    print(isFavorite);
                     return Card(
                       child: ListTile(
                         leading: const Icon(Icons.business),
@@ -113,6 +114,7 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
                             setState(() {
                               companies[index].favorite = !isFavorite;
                             });
+                            updateStatus(companies[index].ticker.toString(), !isFavorite);
                             // Handle icon tap event
                             // Add your logic here to update the favorite status
                           },
@@ -146,6 +148,17 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
       ),
     );
   }
+}
+
+Future<void> updateStatus(String ticker, bool status) async {
+
+  var url = Uri.parse(updateFavoriteUrl).replace(
+    queryParameters: {
+      'ticker': ticker,
+      'favorite': status.toString()
+    }
+  );
+  await http.post(url);
 }
 
 Future<List<Company>> fetchCompanies() async {
