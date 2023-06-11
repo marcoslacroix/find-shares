@@ -3,5 +3,10 @@
   "companies": "Empresas",
   "price": "Preço",
   "vi": "Vi",
-  "percent_more": "Porcentagem a mais"
+  "percentMore": "Porcentagem a mais",
+  "sector": "Sector",
+  "segment": "Segment",
+  "subSector": "Sub sector",
+  "dividendYield": "Dividend yield",
+  "tagAlong": "Tag Along"
 }

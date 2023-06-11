@@ -55,6 +55,7 @@ Company _$CompanyFromJson(Map<String, dynamic> json) => Company(
       sectorname: json['sectorname'] as String?,
       vi: (json['vi'] as num?)?.toDouble(),
       percent_more: (json['percent_more'] as num?)?.toDouble(),
+      tagAlong: json['tagAlong'] as String?,
     );
 
 Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
@@ -101,4 +102,5 @@ Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
       'sectorname': instance.sectorname,
       'vi': instance.vi,
       'percent_more': instance.percent_more,
+      'tagAlong': instance.tagAlong,
     };

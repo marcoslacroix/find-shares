@@ -92,12 +92,21 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(companies[index].ticker ?? ''),
-                            Text('${AppLocalizations.of(context)!.price} ${companies[index].price.toString()}' ?? ''),
-                            Text('${AppLocalizations.of(context)!.vi} ${companies[index].vi}' ?? ''),
-                            Text('${AppLocalizations.of(context)!.percent_more} ${companies[index].percent_more?.toStringAsFixed(2)}%' ?? ''),
+                            Row(
+                              children: [
+                                Text('${AppLocalizations.of(context)!.price}: R\$ ${companies[index].price.toString()}'),
+                                const SizedBox(width: 10), // Add some spacing between the attributes
+                                Text('${AppLocalizations.of(context)!.vi}: R\$ ${companies[index].vi?.toStringAsFixed(2)}'),
+                              ],
+                            ),
+                            Text('${AppLocalizations.of(context)!.dividendYield}: ${companies[index].dy?.toStringAsFixed(2)}'),
+                            Text('${AppLocalizations.of(context)!.percentMore}: ${companies[index].percent_more?.toStringAsFixed(2)}%'),
+                            Text('${AppLocalizations.of(context)!.sector}: ${companies[index].sectorname}'),
+                            Text('${AppLocalizations.of(context)!.segment}: ${companies[index].segmentname}'),
+                            Text('${AppLocalizations.of(context)!.subSector}: ${companies[index].subsectorname}'),
+                            Text('${AppLocalizations.of(context)!.tagAlong}: ${companies[index].tagAlong}')
                           ],
                         ),
-                        trailing: const Icon(Icons.arrow_forward),
                       ),
                     );
                 },

@@ -46,6 +46,7 @@ class Company {
     String? sectorname;
     double? vi;
     double? percent_more;
+    String? tagAlong;
 
 
     Company({this.id, this.companyid, this.companyname, this.ticker,
@@ -58,7 +59,7 @@ class Company {
       this.liquidezmediadiaria, this.vpa, this.lpa, this.valormercado,
       this.createdAt, this.updatedAt, this.segmentid, this.sectorid,
       this.subsectorid, this.subsectorname, this.segmentname, this.sectorname,
-      this.vi, this.percent_more});
+      this.vi, this.percent_more, this.tagAlong});
 
     factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
 
