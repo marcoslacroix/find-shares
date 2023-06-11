@@ -1,8 +1,9 @@
 {
     "@@locale": "pt",
-    "appTitle": "Título do Aplicativo",
     "appTitle": "Demo App",
-    "empresas": "Empresas",
-    "helloWorld": "Olá, Mundo!"
+    "companies": "Empresas",
+    "price": "Preço",
+    "vi": "Vi",
+    "percent_more": "Porcentagem a mais"
 }
 

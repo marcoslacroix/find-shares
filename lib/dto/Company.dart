@@ -48,7 +48,6 @@ class Company {
     double? percent_more;
 
 
-
     Company({this.id, this.companyid, this.companyname, this.ticker,
       this.price, this.p_l, this.dy, this.p_vp, this.p_ebit, this.p_ativo,
       this.ev_ebit, this.margembruta, this.margemebit, this.margemliquida,

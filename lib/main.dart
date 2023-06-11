@@ -41,7 +41,7 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.empresas),
+        title: Text(AppLocalizations.of(context)!.companies),
       ),
       body: DefaultTextStyle(
         style: Theme.of(context).textTheme.displayMedium!,
@@ -83,11 +83,23 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
               List<Company> companies = snapshot.data!;
               return ListView.builder(
                 itemCount: companies.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(companies[index].companyname ?? ''),
-                    //
-                  );
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.business),
+                        title: Text(companies[index].companyname ?? ''),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(companies[index].ticker ?? ''),
+                            Text('${AppLocalizations.of(context)!.price} ${companies[index].price.toString()}' ?? ''),
+                            Text('${AppLocalizations.of(context)!.vi} ${companies[index].vi}' ?? ''),
+                            Text('${AppLocalizations.of(context)!.percent_more} ${companies[index].percent_more?.toStringAsFixed(2)}%' ?? ''),
+                          ],
+                        ),
+                        trailing: const Icon(Icons.arrow_forward),
+                      ),
+                    );
                 },
               );
             } else {

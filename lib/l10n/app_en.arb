@@ -1,4 +1,8 @@
 {
-  "appTitle": "Demo App",
-  "empresas": "Companies"
+    "appTitle": "Demo App",
+    "companies": "Companies",
+    "price": "Price",
+    "vi": "Vi",
+    "percent_more": "Percent more"
+
 }
