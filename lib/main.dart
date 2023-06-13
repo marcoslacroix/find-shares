@@ -30,11 +30,30 @@ class CompaniesBuilder extends StatefulWidget {
 
 class _CompaniesBuilder extends State<CompaniesBuilder> {
   late Future<List<Company>> _companies = Future<List<Company>>.value([]);
+  List<Company> filteredCompanies = [];
 
   @override
   void initState() {
     super.initState();
     _companies = fetchCompanies();
+    _companies.then((companies) {
+      setState(() {
+        filteredCompanies = companies.toList();
+      });
+    });
+  }
+
+  void filterNames(String keyword) {
+    _companies.then((companies) {
+      setState(() {
+        filteredCompanies = companies
+            .where((company) =>
+              company.companyname!
+                  .toLowerCase()
+                  .contains(keyword.toLowerCase()))
+              .toList();
+      });
+    });
   }
 
   @override
@@ -43,108 +62,121 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.companies),
       ),
-      body: DefaultTextStyle(
-        style: Theme.of(context).textTheme.displayMedium!,
-        textAlign: TextAlign.center,
-        child: FutureBuilder<List<Company>>(
-          future: _companies,
-          builder: (BuildContext context, AsyncSnapshot<List<Company>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: CircularProgressIndicator(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text('Waiting...'),
-                  ),
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 60,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text('Erro: ${snapshot.error}'),
-                  ),
-                ],
-              );
-            } else if (snapshot.hasData) {
-              List<Company> companies = snapshot.data!;
-              return ListView.builder(
-                itemCount: companies.length,
-                  itemBuilder: (context, index) {
-                    bool isFavorite = companies[index].favorite ?? false;
-                    print(isFavorite);
-                    return Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.business),
-                        title: Text(companies[index].companyname ?? ''),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(companies[index].ticker ?? ''),
-                            Row(
-                              children: [
-                                Text('${AppLocalizations.of(context)!.price}: R\$ ${companies[index].price.toString()}'),
-                                const SizedBox(width: 10), // Add some spacing between the attributes
-                                Text('${AppLocalizations.of(context)!.vi}: R\$ ${companies[index].vi?.toStringAsFixed(2)}'),
-                              ],
-                            ),
-                            Text('${AppLocalizations.of(context)!.dividendYield}: ${companies[index].dy?.toStringAsFixed(2)}'),
-                            Text('${AppLocalizations.of(context)!.percentMore}: ${companies[index].percent_more?.toStringAsFixed(2)}%'),
-                            Text('${AppLocalizations.of(context)!.sector}: ${companies[index].sectorname}'),
-                            Text('${AppLocalizations.of(context)!.segment}: ${companies[index].segmentname}'),
-                            Text('${AppLocalizations.of(context)!.subSector}: ${companies[index].subsectorname}'),
-                            Text('${AppLocalizations.of(context)!.tagAlong}: ${companies[index].tagAlong}')
-                          ],
+      body: Column(
+        children: [
+          Padding(padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              onChanged: filterNames,
+              decoration: const InputDecoration(
+                labelText: 'Digite um nome' // todo utilizar AppLocations
+              ),
+            ),
+          ),
+          Expanded(
+            child: DefaultTextStyle(
+              style: Theme.of(context).textTheme.displayMedium!,
+              textAlign: TextAlign.center,
+              child: FutureBuilder<List<Company>>(
+                future: _companies,
+                builder: (BuildContext context, AsyncSnapshot<List<Company>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: CircularProgressIndicator(),
                         ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              companies[index].favorite = !isFavorite;
-                            });
-                            updateStatus(companies[index].ticker.toString(), !isFavorite);
-                            // Handle icon tap event
-                            // Add your logic here to update the favorite status
-                          },
-                          icon: isFavorite
-                              ? const Icon(Icons.favorite,
-                              color: Colors.red)
-                              : const Icon(Icons.favorite_border)
-                          ),
-                      )
+                        Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Text('Waiting...'), // todo Utilizar Applocations
+                        ),
+                      ],
                     );
+                  } else if (snapshot.hasError) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 60,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text('Erro: ${snapshot.error}'), // todo Utilizar Applocations
+                        ),
+                      ],
+                    );
+                  } else if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: filteredCompanies.length,
+                        itemBuilder: (context, index) {
+                          Company company = filteredCompanies[index];
+                          bool isFavorite = company.favorite ?? false;
+                          return Card(
+                            child: ListTile(
+                              leading: const Icon(Icons.business),
+                              title: Text(company.companyname ?? ''),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(company.ticker ?? ''),
+                                  Row(
+                                    children: [
+                                      Text('${AppLocalizations.of(context)!.price}: R\$ ${company.price.toString()}'),
+                                      const SizedBox(width: 10), // Add some spacing between the attributes
+                                      Text('${AppLocalizations.of(context)!.vi}: R\$ ${company.vi?.toStringAsFixed(2)}'),
+                                    ],
+                                  ),
+                                  Text('${AppLocalizations.of(context)!.dividendYield}: ${company.dy?.toStringAsFixed(2)}'),
+                                  Text('${AppLocalizations.of(context)!.percentMore}: ${company.percent_more?.toStringAsFixed(2)}%'),
+                                  Text('${AppLocalizations.of(context)!.sector}: ${company.sectorname}'),
+                                  Text('${AppLocalizations.of(context)!.segment}: ${company.segmentname}'),
+                                  Text('${AppLocalizations.of(context)!.subSector}: ${company.subsectorname}'),
+                                  Text('${AppLocalizations.of(context)!.tagAlong}: ${company.tagAlong}')
+                                ],
+                              ),
+                              trailing: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    company.favorite = !isFavorite;
+                                  });
+                                  updateStatus(company.ticker.toString(), !isFavorite);
+                                  // Handle icon tap event
+                                  // Add your logic here to update the favorite status
+                                },
+                                icon: isFavorite
+                                    ? const Icon(Icons.favorite,
+                                    color: Colors.red)
+                                    : const Icon(Icons.favorite_border)
+                                ),
+                            )
+                          );
+                      },
+                    );
+                  } else {
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 60,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Text('No data available'), // todo Utilizar Applocations
+                        ),
+                      ],
+                    );
+                  }
                 },
-              );
-            } else {
-              return const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 60,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text('No data available'),
-                  ),
-                ],
-              );
-            }
-          },
-        ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -169,7 +201,7 @@ Future<List<Company>> fetchCompanies() async {
     List<dynamic> companiesJsonList = jsonDecode(response.body);
     companies = companiesJsonList.map((json) => Company.fromJson(json)).toList();
   } else {
-    print('Request error. status code: ${response.statusCode}');
+    print('Request error. status code: ${response.statusCode}'); // todo Utilizar Applocations
   }
   return companies;
 }
