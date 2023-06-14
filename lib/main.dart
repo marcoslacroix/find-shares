@@ -5,11 +5,10 @@ import 'dto/Company.dart';
 import 'constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,20 +21,21 @@ class MyApp extends StatelessWidget {
 }
 
 class CompaniesBuilder extends StatefulWidget {
-  const CompaniesBuilder({super.key});
+  const CompaniesBuilder({Key? key}) : super(key: key);
 
   @override
-  State<CompaniesBuilder> createState() => _CompaniesBuilder();
+  State<CompaniesBuilder> createState() => _CompaniesBuilderState();
 }
 
-class _CompaniesBuilder extends State<CompaniesBuilder> {
-  late Future<List<Company>> _companies = Future<List<Company>>.value([]);
+class _CompaniesBuilderState extends State<CompaniesBuilder> {
+  late Future<List<Company>> _companies;
   List<Company> filteredCompanies = [];
 
   @override
   void initState() {
     super.initState();
     _companies = fetchCompanies();
+
     _companies.then((companies) {
       setState(() {
         filteredCompanies = companies.toList();
@@ -48,10 +48,10 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
       setState(() {
         filteredCompanies = companies
             .where((company) =>
-              company.companyname!
-                  .toLowerCase()
-                  .contains(keyword.toLowerCase()))
-              .toList();
+            company.companyname!
+                .toLowerCase()
+                .contains(keyword.toLowerCase()))
+            .toList();
       });
     });
   }
@@ -64,113 +64,104 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
       ),
       body: Column(
         children: [
-          Padding(padding: const EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
               onChanged: filterNames,
-              decoration: const InputDecoration(
-                labelText: 'Digite um nome' // todo utilizar AppLocations
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.appTitle,
               ),
             ),
           ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return FilterModal(
+                    companies: _companies,
+                    filteredCompanies: filteredCompanies,
+                    onFilterApplied: (List<Company> filteredCompanies) {
+                      setState(() {
+                        this.filteredCompanies = filteredCompanies;
+                      });
+                    },
+                  );
+                },
+              );
+            },
+          ),
           Expanded(
             child: DefaultTextStyle(
-              style: Theme.of(context).textTheme.displayMedium!,
+              style: Theme.of(context).textTheme.headline6!,
               textAlign: TextAlign.center,
               child: FutureBuilder<List<Company>>(
                 future: _companies,
-                builder: (BuildContext context, AsyncSnapshot<List<Company>> snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Company>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: CircularProgressIndicator(),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text('Waiting...'), // todo Utilizar Applocations
-                        ),
-                      ],
-                    );
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 60,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text('Erro: ${snapshot.error}'), // todo Utilizar Applocations
-                        ),
-                      ],
-                    );
+                    return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData) {
                     return ListView.builder(
                       itemCount: filteredCompanies.length,
-                        itemBuilder: (context, index) {
-                          Company company = filteredCompanies[index];
-                          bool isFavorite = company.favorite ?? false;
-                          return Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.business),
-                              title: Text(company.companyname ?? ''),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(company.ticker ?? ''),
-                                  Row(
-                                    children: [
-                                      Text('${AppLocalizations.of(context)!.price}: R\$ ${company.price.toString()}'),
-                                      const SizedBox(width: 10), // Add some spacing between the attributes
-                                      Text('${AppLocalizations.of(context)!.vi}: R\$ ${company.vi?.toStringAsFixed(2)}'),
-                                    ],
-                                  ),
-                                  Text('${AppLocalizations.of(context)!.dividendYield}: ${company.dy?.toStringAsFixed(2)}'),
-                                  Text('${AppLocalizations.of(context)!.percentMore}: ${company.percent_more?.toStringAsFixed(2)}%'),
-                                  Text('${AppLocalizations.of(context)!.sector}: ${company.sectorname}'),
-                                  Text('${AppLocalizations.of(context)!.segment}: ${company.segmentname}'),
-                                  Text('${AppLocalizations.of(context)!.subSector}: ${company.subsectorname}'),
-                                  Text('${AppLocalizations.of(context)!.tagAlong}: ${company.tagAlong}')
-                                ],
-                              ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    company.favorite = !isFavorite;
-                                  });
-                                  updateStatus(company.ticker.toString(), !isFavorite);
-                                  // Handle icon tap event
-                                  // Add your logic here to update the favorite status
-                                },
-                                icon: isFavorite
-                                    ? const Icon(Icons.favorite,
-                                    color: Colors.red)
-                                    : const Icon(Icons.favorite_border)
+                      itemBuilder: (context, index) {
+                        Company company = filteredCompanies[index];
+                        bool isFavorite = company.favorite ?? false;
+                        return Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.business),
+                            title: Text(company.companyname ?? ''),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(company.ticker ?? ''),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Price: R\$ ${company.price.toString()}',
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'VI: R\$ ${company.vi?.toStringAsFixed(2)}',
+                                    ),
+                                  ],
                                 ),
-                            )
-                          );
+                                Text(
+                                  'Dividend Yield: ${company.dy?.toStringAsFixed(2)}',
+                                ),
+                                Text(
+                                  'Percent More: ${company.percent_more?.toStringAsFixed(2)}%',
+                                ),
+                                Text('Sector: ${company.sectorname}'),
+                                Text('Segment: ${company.segmentname}'),
+                                Text('Subsector: ${company.subsectorname}'),
+                                Text('Tag Along: ${company.tagAlong}'),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  company.favorite = !isFavorite;
+                                });
+                                updateStatus(company.ticker.toString(),
+                                    !isFavorite);
+                              },
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : null,
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     );
                   } else {
-                    return const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 60,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text('No data available'), // todo Utilizar Applocations
-                        ),
-                      ],
-                    );
+                    return const Text('No data available');
                   }
                 },
               ),
@@ -181,27 +172,137 @@ class _CompaniesBuilder extends State<CompaniesBuilder> {
     );
   }
 }
+class FilterModal extends StatefulWidget {
+  late Future<List<Company>> companies;
+  late List<Company> filteredCompanies;
+  final Function(List<Company>) onFilterApplied;
+
+
+  FilterModal({
+    required this.companies,
+    required this.filteredCompanies,
+    required this.onFilterApplied,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _FilterModalState createState() => _FilterModalState();
+}
+
+class _FilterModalState extends State<FilterModal> {
+  late Set<String> _sectors;
+  String _selectedFilter = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _sectors = {};
+
+    fetchSector().then((sectors) {
+      setState(() {
+        _sectors = sectors.toSet();
+      });
+    }).catchError((error) {
+      // Handle error
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Filters'),
+      content: Column(
+        children: [
+          DropdownButtonFormField<String>(
+            value: _selectedFilter,
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedFilter = newValue!;
+              });
+            },
+            items: [
+              const DropdownMenuItem<String>(
+                value: '',
+                child: Text('None'),
+              ),
+              ..._sectors.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ],
+            decoration: const InputDecoration(
+              labelText: 'Select a sector',
+            ),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          child: const Text('Apply'),
+          onPressed: () {
+            applyFilter(_selectedFilter, widget.companies);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void applyFilter(String selectedFilter, Future<List<Company>> companies) {
+    companies.then((companyList) {
+      List<Company> filteredCompanies;
+      setState(() {
+        if (selectedFilter.isNotEmpty) {
+          filteredCompanies = widget.filteredCompanies = companyList
+              .where((company) => company.sectorname == selectedFilter)
+              .toList();
+        } else {
+          filteredCompanies = widget.filteredCompanies = companyList.toList();
+        }
+        widget.onFilterApplied(filteredCompanies);
+      });
+    });
+  }
+}
+
 
 Future<void> updateStatus(String ticker, bool status) async {
-
   var url = Uri.parse(updateFavoriteUrl).replace(
     queryParameters: {
       'ticker': ticker,
-      'favorite': status.toString()
-    }
+      'favorite': status.toString(),
+    },
   );
   await http.post(url);
+}
+
+Future<List<String>> fetchSector() async {
+  var url = Uri.parse(getSector);
+  var response = await http.get(url);
+  if (response.statusCode == 200) {
+    var data = json.decode(response.body);
+    List<String> sectors = [];
+    for (var item in data) {
+      sectors.add(item['sectorname']);
+    }
+    return sectors;
+  } else {
+    throw Exception('Failed to fetch sectors');
+  }
 }
 
 Future<List<Company>> fetchCompanies() async {
   var url = Uri.parse(fetchCompaniesUrl);
   var response = await http.get(url);
-  List<Company> companies = [];
   if (response.statusCode == 200) {
     List<dynamic> companiesJsonList = jsonDecode(response.body);
-    companies = companiesJsonList.map((json) => Company.fromJson(json)).toList();
+    List<Company> companies =
+    companiesJsonList.map((json) => Company.fromJson(json)).toList();
+    return companies;
   } else {
-    print('Request error. status code: ${response.statusCode}'); // todo Utilizar Applocations
+    print('Request error. status code: ${response.statusCode}');
+    return [];
   }
-  return companies;
 }

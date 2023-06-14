@@ -4,7 +4,7 @@ part 'Company.g.dart';
 @JsonSerializable()
 class Company {
 
-    int companyid;
+    int? companyid;
     String? companyname;
     String? ticker;
     double? price;
@@ -17,7 +17,7 @@ class Company {
     String? tagAlong;
     bool? favorite;
 
-    Company({required this.companyid, this.companyname, this.ticker, this.price,
+    Company({this.companyid, this.companyname, this.ticker, this.price,
       this.subsectorname, this.dy, this.segmentname, this.sectorname,
       this.vi, this.percent_more, this.tagAlong, this.favorite});
 
