@@ -7,7 +7,7 @@ part of 'Company.dart';
 // **************************************************************************
 
 Company _$CompanyFromJson(Map<String, dynamic> json) => Company(
-      companyid: json['companyid'] as int,
+      companyid: json['companyid'] as int?,
       companyname: json['companyname'] as String?,
       ticker: json['ticker'] as String?,
       price: (json['price'] as num?)?.toDouble(),
@@ -19,6 +19,7 @@ Company _$CompanyFromJson(Map<String, dynamic> json) => Company(
       percent_more: (json['percent_more'] as num?)?.toDouble(),
       tagAlong: json['tagAlong'] as String?,
       favorite: json['favorite'] as bool?,
+      valormercado: (json['valormercado'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
@@ -31,6 +32,7 @@ Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
       'sectorname': instance.sectorname,
       'dy': instance.dy,
       'vi': instance.vi,
+      'valormercado': instance.valormercado,
       'percent_more': instance.percent_more,
       'tagAlong': instance.tagAlong,
       'favorite': instance.favorite,

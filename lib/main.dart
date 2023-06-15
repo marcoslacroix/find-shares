@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dto/Company.dart';
+import 'package:intl/intl.dart';
 import 'constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -110,6 +111,7 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
                       itemBuilder: (context, index) {
                         Company company = filteredCompanies[index];
                         bool isFavorite = company.favorite ?? false;
+                        Locale deviceLocale = WidgetsBinding.instance!.window.locale;
                         return Card(
                           child: ListTile(
                             leading: const Icon(Icons.business),
@@ -118,6 +120,9 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(company.ticker ?? ''),
+                                Text(
+                                    'Valor de mercado: ${NumberFormat.currency(locale: deviceLocale.toString() , symbol: '\$').format(company.valormercado ?? 0)}'
+                                ),
                                 Row(
                                   children: [
                                     Text(
