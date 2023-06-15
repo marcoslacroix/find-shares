@@ -69,8 +69,8 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               onChanged: filterNames,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.appTitle,
+              decoration: const InputDecoration(
+                labelText: "Pesquisar",
               ),
             ),
           ),
@@ -251,8 +251,25 @@ class _FilterModalState extends State<FilterModal> {
             Navigator.pop(context);
           },
         ),
+        ElevatedButton(
+            onPressed:() {
+              clearFilter(widget.companies);
+              Navigator.pop(context);
+            },
+            child: const Text("Clear")
+        ),
       ],
     );
+  }
+
+  void clearFilter (Future<List<Company>> companies) {
+    companies.then((companyList) {
+      List<Company> filteredCompanies;
+      setState(() {
+        filteredCompanies = widget.filteredCompanies = companyList.toList();
+        widget.onFilterApplied(filteredCompanies);
+      });
+    });
   }
 
   void applyFilter(String selectedFilter, Future<List<Company>> companies) {
