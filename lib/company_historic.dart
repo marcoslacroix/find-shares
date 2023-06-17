@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CompanyHistoric extends StatefulWidget {
+
   @override
   _CompanyHistoricState createState() => _CompanyHistoricState();
 }
