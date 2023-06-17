@@ -17,10 +17,11 @@ class Company {
     double? percent_more;
     String? tagAlong;
     bool? favorite;
+    double? earningYield;
 
     Company({this.companyid, this.companyname, this.ticker, this.price,
       this.subsectorname, this.dy, this.segmentname, this.sectorname,
-      this.vi, this.percent_more, this.tagAlong, this.favorite, this.valormercado});
+      this.vi, this.percent_more, this.tagAlong, this.favorite, this.valormercado, this.earningYield});
 
     factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
 

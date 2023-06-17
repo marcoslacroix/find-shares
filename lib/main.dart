@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'company_historic.dart';
 import 'dto/Company.dart';
 import 'package:intl/intl.dart';
 import 'constants.dart';
@@ -63,6 +64,55 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.companies),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            Container(
+              height: 30,
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: const Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('Ações do Brasil'),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: const Text('Fundos imobiliarios'),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: const Text('Ações bolsa americana'),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: const Text('Conferir Ações/FIIS que devem ser vendidos'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CompanyHistoric())
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Como funciona minha estratégia'),
+              onTap: () {
+              },
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Padding(
@@ -114,7 +164,7 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
                         Locale deviceLocale = WidgetsBinding.instance!.window.locale;
                         return Card(
                           child: ListTile(
-                            leading: const Icon(Icons.business),
+                            leading: Text((index + 1).toString()),
                             title: Text(company.companyname ?? ''),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +188,7 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
                                   'Dividend Yield: ${company.dy?.toStringAsFixed(2)}',
                                 ),
                                 Text(
-                                  'Percent More: ${company.percent_more?.toStringAsFixed(2)}%',
+                                  'Earning Yield: ${company.earningYield?.toStringAsFixed(2)}%',
                                 ),
                                 Text('Sector: ${company.sectorname}'),
                                 Text('Segment: ${company.segmentname}'),
@@ -177,6 +227,9 @@ class _CompaniesBuilderState extends State<CompaniesBuilder> {
     );
   }
 }
+
+
+
 class FilterModal extends StatefulWidget {
   late Future<List<Company>> companies;
   late List<Company> filteredCompanies;
