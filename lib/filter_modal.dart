@@ -72,18 +72,18 @@ class _FilterModalState extends State<FilterModal> {
       ),
       actions: <Widget>[
         ElevatedButton(
-          child: const Text('Apply'),
-          onPressed: () {
-            applyFilter(_selectedFilter, widget.companies);
-            Navigator.pop(context);
-          },
-        ),
-        ElevatedButton(
             onPressed:() {
               clearFilter(widget.companies);
               Navigator.pop(context);
             },
             child: const Text("Clear")
+        ),
+        ElevatedButton(
+          child: const Text('Apply'),
+          onPressed: () {
+            applyFilter(_selectedFilter, widget.companies);
+            Navigator.pop(context);
+          },
         ),
       ],
     );

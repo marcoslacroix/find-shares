@@ -1,6 +1,8 @@
+import 'package:find_shares/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'home_page.dart';
+import 'package:provider/provider.dart';
+import 'auth.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,11 +11,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: HomePage(),
+    return ChangeNotifierProvider(
+      create: (_) => Auth(),
+      child: const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: LoginPage(),
+      ),
     );
   }
 }
-

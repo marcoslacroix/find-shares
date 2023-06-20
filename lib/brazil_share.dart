@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'filter_modal.dart';
 import 'dto/Company.dart';
 import 'package:intl/intl.dart';
 import 'util/constants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BrazilShare extends StatefulWidget {
   const BrazilShare({Key? key}) : super(key: key);
@@ -181,14 +181,20 @@ Future<void> updateStatus(String ticker, bool status) async {
 
 Future<List<Company>> fetchCompanies() async {
   var url = Uri.parse(fetchCompaniesUrl);
-  var response = await http.get(url);
+
+  var response = await http.get(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEiLCJpYXQiOjE2ODcxMjk3MzV9.xbmxnoyMbTLI7wBaHVWtw6uJ82-40_Z3tJquIN-QtM0',
+    }
+  );
   if (response.statusCode == 200) {
     List<dynamic> companiesJsonList = jsonDecode(response.body);
-    List<Company> companies =
-    companiesJsonList.map((json) => Company.fromJson(json)).toList();
+    List<Company> companies = companiesJsonList.map((json) => Company.fromJson(json)).toList();
     return companies;
   } else {
     print('Request error. status code: ${response.statusCode}');
     return [];
   }
 }
+

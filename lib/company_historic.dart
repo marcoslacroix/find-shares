@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CompanyHistoric extends StatefulWidget {
+  const CompanyHistoric({super.key});
+
 
   @override
   _CompanyHistoricState createState() => _CompanyHistoricState();
