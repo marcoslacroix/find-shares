@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class CompanyHistoric extends StatefulWidget {
-  const CompanyHistoric({super.key});
+class CompanyHistoricPage extends StatefulWidget {
+  const CompanyHistoricPage({super.key});
 
 
   @override
-  _CompanyHistoricState createState() => _CompanyHistoricState();
+  _CompanyHistoricPageState createState() => _CompanyHistoricPageState();
 }
 
-class _CompanyHistoricState extends State<CompanyHistoric> {
+class _CompanyHistoricPageState extends State<CompanyHistoricPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

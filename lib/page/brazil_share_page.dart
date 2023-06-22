@@ -2,26 +2,30 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'filter_modal.dart';
-import 'dto/Company.dart';
+import 'package:provider/provider.dart';
+import '../auth/auth.dart';
+import '../modal/filter_modal.dart';
+import '../dto/Company.dart';
 import 'package:intl/intl.dart';
-import 'util/constants.dart';
+import '../util/constants.dart';
 
-class BrazilShare extends StatefulWidget {
-  const BrazilShare({Key? key}) : super(key: key);
+class BrazilSharePage extends StatefulWidget {
+  const BrazilSharePage({Key? key}) : super(key: key);
 
   @override
-  State<BrazilShare> createState() => _BrazilShareState();
+  State<BrazilSharePage> createState() => _BrazilSharePageState();
 }
 
-class _BrazilShareState extends State<BrazilShare> {
+class _BrazilSharePageState extends State<BrazilSharePage> {
   late Future<List<Company>> _companies;
   List<Company> filteredCompanies = [];
 
   @override
   void initState() {
     super.initState();
-    _companies = fetchCompanies();
+    final auth = Provider.of<Auth>(context, listen: false);
+
+    _companies = fetchCompanies(auth);
 
     _companies.then((companies) {
       setState(() {
@@ -92,7 +96,12 @@ class _BrazilShareState extends State<BrazilShare> {
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Company>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return Container(
+                      width: 10,
+                      height: 10,
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(),
+                    );
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData) {
@@ -111,29 +120,29 @@ class _BrazilShareState extends State<BrazilShare> {
                               children: [
                                 Text(company.ticker ?? ''),
                                 Text(
-                                    'Valor de mercado: ${NumberFormat.currency(locale: deviceLocale.toString() , symbol: '\$').format(company.valormercado ?? 0)}'
+                                    'Valor de mercado: ${NumberFormat.currency(locale: deviceLocale.toString() , symbol: '\$').format(company.valormercado ?? 0) ?? ''}'
                                 ),
                                 Row(
                                   children: [
                                     Text(
-                                      'Price: R\$ ${company.price.toString()}',
+                                      'Price: R\$ ${company.price.toString() ?? ''}',
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
-                                      'VI: R\$ ${company.vi?.toStringAsFixed(2)}',
+                                      'VI: R\$ ${company.vi?.toStringAsFixed(2) ?? ''}',
                                     ),
                                   ],
                                 ),
                                 Text(
-                                  'Dividend Yield: ${company.dy?.toStringAsFixed(2)}',
+                                  'Dividend Yield: ${company.dy?.toStringAsFixed(2) ?? ''}%',
                                 ),
                                 Text(
-                                  'Earning Yield: ${company.earningYield?.toStringAsFixed(2)}%',
+                                  'Earning Yield: ${company.earningYield?.toStringAsFixed(2)?? '0'}%',
                                 ),
-                                Text('Sector: ${company.sectorname}'),
-                                Text('Segment: ${company.segmentname}'),
-                                Text('Subsector: ${company.subsectorname}'),
-                                Text('Tag Along: ${company.tagAlong}'),
+                                Text('Sector: ${company.sectorname ?? ''}'),
+                                Text('Segment: ${company.segmentname ?? ''}'),
+                                Text('Subsector: ${company.subsectorname ?? ''}'),
+                                Text('Tag Along: ${company.tagAlong ?? ''}'),
                               ],
                             ),
                             trailing: IconButton(
@@ -179,13 +188,13 @@ Future<void> updateStatus(String ticker, bool status) async {
 }
 
 
-Future<List<Company>> fetchCompanies() async {
+Future<List<Company>> fetchCompanies(Auth auth) async {
   var url = Uri.parse(fetchCompaniesUrl);
 
   var response = await http.get(
     url,
     headers: {
-      HttpHeaders.authorizationHeader: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEiLCJpYXQiOjE2ODcxMjk3MzV9.xbmxnoyMbTLI7wBaHVWtw6uJ82-40_Z3tJquIN-QtM0',
+      HttpHeaders.authorizationHeader: auth.token,
     }
   );
   if (response.statusCode == 200) {

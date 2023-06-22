@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class InfoStrategy extends StatefulWidget {
-  const InfoStrategy({super.key});
+class InfoStrategyPage extends StatefulWidget {
+  const InfoStrategyPage({super.key});
 
   @override
   _InfoStrategy createState() => _InfoStrategy();
 }
 
-class _InfoStrategy extends State<InfoStrategy> {
+class _InfoStrategy extends State<InfoStrategyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

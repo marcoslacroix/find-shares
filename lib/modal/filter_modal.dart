@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'dto/Company.dart';
+import 'package:provider/provider.dart';
+import '../auth/auth.dart';
+import '../dto/Company.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'util/constants.dart';
+import '../util/constants.dart';
 
 class FilterModal extends StatefulWidget {
   late Future<List<Company>> companies;
@@ -29,8 +33,9 @@ class _FilterModalState extends State<FilterModal> {
   void initState() {
     super.initState();
     _sectors = {};
+    final auth = Provider.of<Auth>(context, listen: false);
 
-    fetchSector().then((sectors) {
+    fetchSector(auth).then((sectors) {
       setState(() {
         _sectors = sectors.toSet();
       });
@@ -99,9 +104,14 @@ class _FilterModalState extends State<FilterModal> {
     });
   }
 
-  Future<List<String>> fetchSector() async {
+  Future<List<String>> fetchSector(Auth auth) async {
     var url = Uri.parse(getSector);
-    var response = await http.get(url);
+    var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: auth.token,
+        }
+    );
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       List<String> sectors = [];

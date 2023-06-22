@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class AmericanShares extends StatefulWidget {
-  const AmericanShares({super.key});
+class AmericanSharesPage extends StatefulWidget {
+  const AmericanSharesPage({super.key});
 
   @override
   _AmericanShares createState() => _AmericanShares();
 }
 
-class _AmericanShares extends State<AmericanShares> {
+class _AmericanShares extends State<AmericanSharesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
