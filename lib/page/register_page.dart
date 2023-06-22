@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:find_shares/page/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import '../util/constants.dart';
 
 
 class RegisterPage extends StatefulWidget {
@@ -52,7 +58,81 @@ class _RegisterPageState extends State<RegisterPage> {
           content: Text('Nome obrigatório'),
         ),
       );
+    } else if (_passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("Password obrigatório")
+        )
+      );
+    } else if (_lastnameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text("Sobrenome obrigatório")
+          )
+      );
     }
+
+    if (_lastnameController.text.isNotEmpty && _passwordController.text.isNotEmpty && _nameController.text.isNotEmpty && _emailController.text.isNotEmpty) {
+      Future<Response> futureResponse = doRegister();
+
+      futureResponse.then((response) => {
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text('Registro efetuado com sucesso'),
+            ),
+          ),
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage(),
+                fullscreenDialog: true,
+              ),
+            (route) => false
+          )
+        } else if (response.statusCode == 400) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(jsonDecode(response.body)["message"] ?? "Houve um error"),
+            ),
+          )
+        } else {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Houve um erro no registro'),
+            ),
+          )
+        }
+      });
+    }
+  }
+
+  Future<Response> doRegister() async {
+    Map<String, dynamic> payload = {
+      "email": _emailController.text,
+      "password": _passwordController.text,
+      "name": _nameController.text,
+      "lastName": _lastnameController.text
+    };
+    String jsonPayload = jsonEncode(payload);
+    var url = Uri.parse(createUserUrl);
+    var response = await http.post(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json'
+      },
+      body: jsonPayload
+    );
+    return response;
   }
 
   @override

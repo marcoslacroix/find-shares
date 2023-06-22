@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:find_shares/page/home_page.dart';
 import 'package:find_shares/page/register_page.dart';
 import 'package:find_shares/util/constants.dart';
@@ -34,10 +35,10 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<String> doRequestLogin(String email, String password) async {
+  Future<String> doRequestLogin() async {
     Map<String, dynamic> payload = {
-      "email": email,
-      "password": password
+      "email": _emailController.text,
+      "password": _passwordController.text
     };
     String jsonPayload = jsonEncode(payload);
 
@@ -46,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     var response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json'
+          HttpHeaders.contentTypeHeader: 'application/json'
         },
         body: jsonPayload
     );
@@ -63,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
     final String email = _emailController.text;
     final String password = _passwordController.text;
     final auth = Provider.of<Auth>(context, listen: false);
-    Future<String> futureToken = doRequestLogin(email, password);
+    Future<String> futureToken = doRequestLogin();
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,7 +92,6 @@ class _LoginPageState extends State<LoginPage> {
                 context,
                 MaterialPageRoute(builder: (context) => const HomePage())
             );
-
           } else {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(

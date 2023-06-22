@@ -3,5 +3,6 @@ const String fetchCompaniesUrl = '$apiBaseUrl/api/fetch/brazil-company';
 const String updateFavoriteUrl = '$apiBaseUrl/api/companies/updateFavorite';
 const String getSector = '$apiBaseUrl/api/brazil-company/sector';
 const String login = '$apiBaseUrl/api/login';
+const String createUserUrl = '$apiBaseUrl/api/create-user';
 const String fetchRealStateFunds = '$apiBaseUrl/api/fetch/real-state-funds';
 const String fetchAmericanCompaniesUrl = '$apiBaseUrl/api/fetch/american-company';
