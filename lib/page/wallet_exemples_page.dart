@@ -12,7 +12,7 @@ class _WalletExemples extends State<WalletExemplesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Exemplos de carteiras"),
+        title: const Text("Exemplos de carteiras (Em breve)"),
       ),
       body: Container(
         // Widget do corpo da tela

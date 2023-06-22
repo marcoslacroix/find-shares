@@ -12,7 +12,7 @@ class _RealStateFunds extends State<RealStateFundsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fundos imobiliários"),
+        title: const Text("Fundos imobiliários (Em breve)"),
       ),
       body: Container(
 

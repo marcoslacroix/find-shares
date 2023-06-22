@@ -13,7 +13,7 @@ class _CompanyHistoricPageState extends State<CompanyHistoricPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Empresas que devem ser vendidas"),
+        title: const Text("Empresas que devem ser vendidas (Em breve)"),
       ),
       body: Container(
         // Widget do corpo da tela
