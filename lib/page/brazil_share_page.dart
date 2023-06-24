@@ -116,32 +116,48 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
           ),
           Column(
             children: [
-              DropdownButtonFormField<String>(
-                value: _selectedFilter,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedFilter = newValue!;
-                    applyFilterSector();
-                  });
-                },
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: '',
-                    child: Text('None'),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey[200],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedFilter,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedFilter = newValue!;
+                        applyFilterSector();
+                      });
+                    },
+                    items: [
+                      const DropdownMenuItem<String>(
+                        value: '',
+                        child: Text('None'),
+                      ),
+                      ..._sectors.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ],
+                    decoration: const InputDecoration(
+                      labelText: 'Select a sector',
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                    icon: Icon(Icons.arrow_drop_down),
                   ),
-                  ..._sectors.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ],
-                decoration: const InputDecoration(
-                  labelText: 'Select a sector',
                 ),
               ),
             ],
           ),
+
           Expanded(
             child: DefaultTextStyle(
               style: Theme.of(context).textTheme.headline6!,
@@ -167,6 +183,7 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
                         bool isFavorite = company.favorite ?? false;
                         Locale deviceLocale = WidgetsBinding.instance!.window.locale;
                         return Card(
+                          margin: const EdgeInsets.only(top: 16),
                           child: ListTile(
                             leading: Text((index + 1).toString()),
                             title: Text(company.companyname ?? ''),
