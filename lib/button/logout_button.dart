@@ -10,8 +10,8 @@ class LogoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<Auth>(context, listen: false);
 
-    return IconButton(
-      icon: const Icon(Icons.logout),
+    return TextButton(
+      child: const Text("Logout"),
       onPressed: () {
         auth.logout();
         ScaffoldMessenger.of(context).hideCurrentSnackBar();

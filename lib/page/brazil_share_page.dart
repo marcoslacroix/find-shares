@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../auth/auth.dart';
-import '../modal/filter_modal.dart';
 import '../dto/Company.dart';
-import 'package:intl/intl.dart';
 import '../util/constants.dart';
 
 class BrazilSharePage extends StatefulWidget {
@@ -14,22 +12,76 @@ class BrazilSharePage extends StatefulWidget {
 
   @override
   State<BrazilSharePage> createState() => _BrazilSharePageState();
+
 }
+
+Future<List<String>> fetchSector(Auth auth) async {
+  var url = Uri.parse(getSector);
+  var response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader: auth.token,
+      }
+  );
+  if (response.statusCode == 200) {
+    var data = json.decode(response.body);
+    List<String> sectors = [];
+    for (var item in data) {
+      sectors.add(item['sectorname']);
+    }
+    return sectors;
+  } else {
+    throw Exception('Failed to fetch sectors');
+  }
+}
+
+
 
 class _BrazilSharePageState extends State<BrazilSharePage> {
   late Future<List<Company>> _companies;
   List<Company> filteredCompanies = [];
+  late final Function(List<Company>) onFilterApplied = (List<Company> filteredCompanies) {
+
+  };
+  late Set<String> _sectors;
+  String _selectedFilter = '';
+
 
   @override
   void initState() {
     super.initState();
     final auth = Provider.of<Auth>(context, listen: false);
 
+    super.initState();
+    _sectors = {};
+
+    fetchSector(auth).then((sectors) {
+      setState(() {
+        _sectors = sectors.toSet();
+      });
+    }).catchError((error) {
+      // Handle error
+    });
+
     _companies = fetchCompanies(auth);
 
     _companies.then((companies) {
       setState(() {
         filteredCompanies = companies.toList();
+      });
+    });
+  }
+
+  void applyFilterSector() {
+    _companies.then((companyList) {
+      setState(() {
+        if (_selectedFilter.isNotEmpty) {
+          filteredCompanies = filteredCompanies = companyList
+              .where((company) => company.sectorname == _selectedFilter)
+              .toList();
+        } else {
+          filteredCompanies = filteredCompanies = companyList.toList();
+        }
       });
     });
   }
@@ -50,9 +102,6 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Ações Brasileiras"),
-      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -65,27 +114,33 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
               ),
             ),
           ),
-          Container(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              icon: const Icon(Icons.filter_list),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FilterModal(
-                      companies: _companies,
-                      filteredCompanies: filteredCompanies,
-                      onFilterApplied: (List<Company> filteredCompanies) {
-                        setState(() {
-                          this.filteredCompanies = filteredCompanies;
-                        });
-                      },
+          Column(
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedFilter,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedFilter = newValue!;
+                    applyFilterSector();
+                  });
+                },
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: '',
+                    child: Text('None'),
+                  ),
+                  ..._sectors.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
                     );
-                  },
-                );
-              },
-            ),
+                  }).toList(),
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Select a sector',
+                ),
+              ),
+            ],
           ),
           Expanded(
             child: DefaultTextStyle(
@@ -119,9 +174,6 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(company.ticker ?? ''),
-                                Text(
-                                    'Valor de mercado: ${NumberFormat.currency(locale: deviceLocale.toString() , symbol: '\$').format(company.valormercado ?? 0) ?? ''}'
-                                ),
                                 Row(
                                   children: [
                                     Text(
@@ -134,15 +186,11 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
                                   ],
                                 ),
                                 Text(
-                                  'Dividend Yield: ${company.dy?.toStringAsFixed(2) ?? ''}%',
-                                ),
-                                Text(
                                   'Earning Yield: ${company.earningYield?.toStringAsFixed(2)?? '0'}%',
                                 ),
                                 Text('Sector: ${company.sectorname ?? ''}'),
                                 Text('Segment: ${company.segmentname ?? ''}'),
                                 Text('Subsector: ${company.subsectorname ?? ''}'),
-                                Text('Tag Along: ${company.tagAlong ?? ''}'),
                               ],
                             ),
                             trailing: IconButton(

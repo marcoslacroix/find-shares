@@ -108,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               backgroundColor: Colors.red,
-              content: Text('Houve um erro no registro'),
+              content: Text('Houve um erro'),
             ),
           )
         }
