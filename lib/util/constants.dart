@@ -4,5 +4,7 @@ const String updateFavoriteUrl = '$apiBaseUrl/api/companies/updateFavorite';
 const String getSector = '$apiBaseUrl/api/brazil-company/sector';
 const String login = '$apiBaseUrl/api/login';
 const String createUserUrl = '$apiBaseUrl/api/create-user';
+const String deleteUser = '$apiBaseUrl/api/user/delete';
+const String getUser = '$apiBaseUrl/api/get-user';
 const String fetchRealStateFunds = '$apiBaseUrl/api/fetch/real-state-funds';
 const String fetchAmericanCompaniesUrl = '$apiBaseUrl/api/fetch/american-company';

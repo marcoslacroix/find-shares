@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:find_shares/page/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import '../auth/auth.dart';
+import 'package:http/http.dart' as http;
+
+import '../util/constants.dart';
 
 class DeleteAccountButton extends StatelessWidget {
   const DeleteAccountButton({Key? key}) : super(key: key);
@@ -11,7 +17,6 @@ class DeleteAccountButton extends StatelessWidget {
     final auth = Provider.of<Auth>(context, listen: false);
 
     return TextButton(
-      child: const Text("Deletar"),
       style: ButtonStyle(foregroundColor: MaterialStateProperty.all<Color>(Colors.red)),
       onPressed: () {
         showDialog(
@@ -30,13 +35,13 @@ class DeleteAccountButton extends StatelessWidget {
                 TextButton(
                   child: const Text("Confirmar"),
                   onPressed: () {
+                    deleteUserAccount(auth);
                     auth.logout();
-                    // todo deletar account
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         backgroundColor: Colors.green,
-                        content: Text('Usuário desconectado'),
+                        content: Text('Você foi desconectado do sistema'),
                       ),
                     );
                     Navigator.pushAndRemoveUntil(
@@ -54,7 +59,18 @@ class DeleteAccountButton extends StatelessWidget {
           },
         );
       },
+      child: const Text("Deleter"),
     );
 
   }
+}
+
+void deleteUserAccount(Auth auth) {
+  var url = Uri.parse(deleteUser);
+  http.delete(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader: auth.token,
+      }
+  );
 }

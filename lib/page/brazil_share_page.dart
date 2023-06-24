@@ -15,35 +15,10 @@ class BrazilSharePage extends StatefulWidget {
 
 }
 
-Future<List<String>> fetchSector(Auth auth) async {
-  var url = Uri.parse(getSector);
-  var response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.authorizationHeader: auth.token,
-      }
-  );
-  if (response.statusCode == 200) {
-    var data = json.decode(response.body);
-    List<String> sectors = [];
-    for (var item in data) {
-      sectors.add(item['sectorname']);
-    }
-    return sectors;
-  } else {
-    throw Exception('Failed to fetch sectors');
-  }
-}
-
-
-
 class _BrazilSharePageState extends State<BrazilSharePage> {
   late Future<List<Company>> _companies;
   List<Company> filteredCompanies = [];
-  late final Function(List<Company>) onFilterApplied = (List<Company> filteredCompanies) {
-
-  };
-  late Set<String> _sectors;
+  late Set<String> _sectors = {};
   String _selectedFilter = '';
 
 
@@ -51,9 +26,6 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
   void initState() {
     super.initState();
     final auth = Provider.of<Auth>(context, listen: false);
-
-    super.initState();
-    _sectors = {};
 
     fetchSector(auth).then((sectors) {
       setState(() {
@@ -252,6 +224,24 @@ Future<void> updateStatus(String ticker, bool status) async {
   await http.post(url);
 }
 
+Future<List<String>> fetchSector(Auth auth) async {
+  var url = Uri.parse(getSector);
+  var response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader: auth.token,
+      }
+  );
+  if (response.statusCode == 200) {
+    var data = json.decode(response.body);
+    List<String> sectors = [];
+    for (var item in data) {
+      sectors.add(item['sectorname']);
+    }
+    return sectors;
+  }
+  return [];
+}
 
 Future<List<Company>> fetchCompanies(Auth auth) async {
   var url = Uri.parse(fetchCompaniesUrl);
