@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:find_shares/page/login_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -21,6 +19,11 @@ class _RegisterPageState extends State<RegisterPage> {
   late TextEditingController _nameController;
   late TextEditingController _lastnameController;
   late TextEditingController _passwordController;
+  bool passwordContainsNumber = false;
+  bool passwordContainsUppercase = false;
+  bool passwordContainsLowercase = false;
+  bool passwordContainsSpecialChar = false;
+  bool passwordContainsEigthToTwelveDigits = false;
   bool isPasswordVisible = false;
 
   @override
@@ -30,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _nameController = TextEditingController();
     _lastnameController = TextEditingController();
     _passwordController = TextEditingController();
+    _passwordController.addListener(updatePasswordContainsNumberAndUppercase);
   }
 
   @override
@@ -38,101 +42,19 @@ class _RegisterPageState extends State<RegisterPage> {
     _nameController.dispose();
     _lastnameController.dispose();
     _passwordController.dispose();
+    _passwordController.removeListener(updatePasswordContainsNumberAndUppercase);
     super.dispose();
   }
 
-  void _handleRegister(BuildContext context) {
-    if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('Email obrigatório'),
-        ),
-      );
-    } else if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('Nome obrigatório'),
-        ),
-      );
-    } else if (_passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text("Password obrigatório")
-        )
-      );
-    } else if (_lastnameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              backgroundColor: Colors.red,
-              content: Text("Sobrenome obrigatório")
-          )
-      );
-    }
-
-    if (_lastnameController.text.isNotEmpty && _passwordController.text.isNotEmpty && _nameController.text.isNotEmpty && _emailController.text.isNotEmpty) {
-      Future<Response> futureResponse = doRegister();
-
-      futureResponse.then((response) => {
-        if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.green,
-              content: Text('Registro efetuado com sucesso'),
-            ),
-          ),
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage(),
-                fullscreenDialog: true,
-              ),
-            (route) => false
-          )
-        } else if (response.statusCode == 400) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(jsonDecode(response.body)["message"] ?? "Houve um error"),
-            ),
-          )
-        } else {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('Houve um erro'),
-            ),
-          )
-        }
-      });
-    }
-  }
-
-  Future<Response> doRegister() async {
-    Map<String, dynamic> payload = {
-      "email": _emailController.text,
-      "password": _passwordController.text,
-      "name": _nameController.text,
-      "lastName": _lastnameController.text
-    };
-    String jsonPayload = jsonEncode(payload);
-    var url = Uri.parse(createUserUrl);
-    var response = await http.post(
-      url,
-      headers: {
-        HttpHeaders.contentTypeHeader: 'application/json'
-      },
-      body: jsonPayload
-    );
-    return response;
+  void updatePasswordContainsNumberAndUppercase() {
+    setState(() {
+      String password = _passwordController.text;
+      passwordContainsNumber = password.contains(RegExp(r'[0-9]'));
+      passwordContainsLowercase = password.contains(RegExp(r'[a-z]'));
+      passwordContainsSpecialChar = password.contains(RegExp(r'[^A-Za-z0-9]'));
+      passwordContainsUppercase = password.contains(RegExp(r'[A-Z]'));
+      passwordContainsEigthToTwelveDigits = password.length >= 8 && password.length <= 12;
+    });
   }
 
   @override
@@ -180,6 +102,90 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               obscureText: !isPasswordVisible,
             ),
+            Row(
+              children: [
+                if (passwordContainsUppercase)
+                  const Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )
+                else
+                  const Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                Text(
+                  'Letra maiúscula',
+                  style: TextStyle(
+                    color: passwordContainsUppercase ? Colors.green : Colors.red,
+                  ),
+                ),
+                if (passwordContainsNumber)
+                  const Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )
+                else
+                  const Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                Text(
+                  'Número',
+                  style: TextStyle(
+                    color: passwordContainsNumber ? Colors.green : Colors.red,
+                  ),
+                ),
+                if (passwordContainsLowercase)
+                  const Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )
+                else
+                  const Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                Text(
+                  'Letra minuscula',
+                  style: TextStyle(
+                    color: passwordContainsLowercase ? Colors.green : Colors.red,
+                  ),
+                ),
+                if (passwordContainsSpecialChar)
+                  const Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )
+                else
+                  const Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                Text(
+                  'Character especial',
+                  style: TextStyle(
+                    color: passwordContainsSpecialChar ? Colors.green : Colors.red,
+                  ),
+                ),
+                if (passwordContainsEigthToTwelveDigits)
+                  const Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )
+                else
+                  const Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                Text(
+                  'A senha contém de 8 a 12 caracteres',
+                  style: TextStyle(
+                    color: passwordContainsEigthToTwelveDigits ? Colors.green : Colors.red,
+                  ),
+                ),
+              ],
+            ),
             Column(
               children: [
                 Container(
@@ -212,4 +218,125 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  bool validateFields() {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Email obrigatório'),
+        ),
+      );
+      return false;
+    } else if (_nameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Nome obrigatório'),
+        ),
+      );
+      return false;
+    } else if (_passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Password obrigatório"),
+        ),
+      );
+      return false;
+    } else if (_lastnameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Sobrenome obrigatório"),
+        ),
+      );
+      return false;
+    } else if (!isPasswordStrong(_passwordController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas e números."),
+        ),
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  bool isPasswordStrong(String password) {
+    if (password.length < 8) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      return false;
+    }
+
+    return true;
+  }
+
+
+  Future<Response> doRegister() async {
+    Map<String, dynamic> payload = {
+      "email": _emailController.text,
+      "password": _passwordController.text,
+      "name": _nameController.text,
+      "lastName": _lastnameController.text
+    };
+    String jsonPayload = jsonEncode(payload);
+    var url = Uri.parse(createUserUrl);
+    var response = await http.post(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json'
+        },
+        body: jsonPayload
+    );
+    return response;
+  }
+
+  void _handleRegister(BuildContext context) {
+    if (validateFields()) {
+      Future<Response> futureResponse = doRegister();
+
+      futureResponse.then((response) => {
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text('Registro efetuado com sucesso'),
+            ),
+          ),
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage(),
+                fullscreenDialog: true,
+              ),
+                  (route) => false
+          )
+        } else {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(jsonDecode(response.body)["message"] ?? "Houve um error"),
+            ),
+          )
+        }
+      });
+    }
+  }
+
 }
+

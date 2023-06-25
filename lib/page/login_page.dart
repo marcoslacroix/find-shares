@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.red,
-          content: Text('Favor verifique sua senha ou e-mail'),
+          content: Text('Favor verifique seu e-mail ou senha'),
         ),
       );
     } else {
