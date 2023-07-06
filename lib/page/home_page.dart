@@ -15,7 +15,6 @@ class HomePage extends StatefulWidget {
   _HomePage createState() => _HomePage();
 }
 
-
 class _HomePage extends State<HomePage> {
 
   int _selectedIndex = 0;
@@ -34,9 +33,6 @@ class _HomePage extends State<HomePage> {
         index: _selectedIndex,
         children: const <Widget>[
           Center(
-            child: Text('Conteúdo da tela Início'),
-          ),
-          Center(
             child: BrazilSharePage(),
           ),
           Center(
@@ -46,10 +42,6 @@ class _HomePage extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Início',
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.flag),
             label: 'Ações do Brasil',

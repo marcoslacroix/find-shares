@@ -27,9 +27,8 @@ class _MyPerfilPage extends State<MyPerfilPage> {
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.person_2),
               FutureBuilder<User>(
                 future: fetchUser(auth),
                 builder: (context, snapshot) {

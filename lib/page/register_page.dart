@@ -120,22 +120,30 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: passwordContainsUppercase ? Colors.green : Colors.red,
                   ),
                 ),
-                if (passwordContainsNumber)
-                  const Icon(
-                    Icons.check,
-                    color: Colors.green,
-                  )
-                else
-                  const Icon(
-                    Icons.clear,
-                    color: Colors.red,
+              ],
+            ),
+            Row(
+                children: [
+                  if (passwordContainsNumber)
+                    const Icon(
+                      Icons.check,
+                      color: Colors.green,
+                    )
+                  else
+                    const Icon(
+                      Icons.clear,
+                      color: Colors.red,
+                    ),
+                  Text(
+                    'Número',
+                    style: TextStyle(
+                      color: passwordContainsNumber ? Colors.green : Colors.red,
+                    ),
                   ),
-                Text(
-                  'Número',
-                  style: TextStyle(
-                    color: passwordContainsNumber ? Colors.green : Colors.red,
-                  ),
-                ),
+                ],
+            ),
+            Row(
+              children: [
                 if (passwordContainsLowercase)
                   const Icon(
                     Icons.check,
@@ -152,6 +160,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: passwordContainsLowercase ? Colors.green : Colors.red,
                   ),
                 ),
+              ],
+            ),
+            Row(
+              children: [
                 if (passwordContainsSpecialChar)
                   const Icon(
                     Icons.check,
@@ -168,6 +180,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: passwordContainsSpecialChar ? Colors.green : Colors.red,
                   ),
                 ),
+              ],
+            ),
+            Row(
+              children: [
                 if (passwordContainsEigthToTwelveDigits)
                   const Icon(
                     Icons.check,

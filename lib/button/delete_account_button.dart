@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:find_shares/page/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import '../auth/auth.dart';
 import 'package:http/http.dart' as http;
@@ -59,7 +58,7 @@ class DeleteAccountButton extends StatelessWidget {
           },
         );
       },
-      child: const Text("Deleter"),
+      child: const Text("Deletar"),
     );
 
   }

@@ -20,13 +20,12 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
   List<Company> filteredCompanies = [];
   late Set<String> _sectors = {};
   String _selectedFilter = '';
-
+  late final auth;
 
   @override
   void initState() {
     super.initState();
-    final auth = Provider.of<Auth>(context, listen: false);
-
+    auth = Provider.of<Auth>(context, listen: false);
     fetchSector(auth).then((sectors) {
       setState(() {
         _sectors = sectors.toSet();
@@ -187,8 +186,11 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
                                 setState(() {
                                   company.favorite = !isFavorite;
                                 });
-                                updateStatus(company.ticker.toString(),
-                                    !isFavorite);
+                                updateStatus(
+                                    company.ticker.toString(),
+                                    !isFavorite,
+                                    auth
+                                );
                               },
                               icon: Icon(
                                 isFavorite
@@ -214,14 +216,19 @@ class _BrazilSharePageState extends State<BrazilSharePage> {
   }
 }
 
-Future<void> updateStatus(String ticker, bool status) async {
+Future<void> updateStatus(String ticker, bool status, Auth auth) async {
   var url = Uri.parse(updateFavoriteUrl).replace(
     queryParameters: {
       'ticker': ticker,
       'favorite': status.toString(),
     },
   );
-  await http.post(url);
+  await http.post(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader: auth.token,
+      }
+  );
 }
 
 Future<List<String>> fetchSector(Auth auth) async {
